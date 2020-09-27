@@ -6,8 +6,6 @@ import storage
 from common import crypt
 from common.socket_util import Socket, decode_utf8, FORBIDDEN, NO_INPUT, BAD_REQUEST, SUCCESS
 
-LEN_BYTES = 4
-
 
 class Server:
     def __init__(self, host, port, backlog=10):
