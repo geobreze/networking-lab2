@@ -25,4 +25,9 @@ Allowed commands for client are:
 - remove --- to remove file
 - new --- to create new file
 
+To authenticate with test user use next credentials:
 
+```
+username: user
+password: password
+```

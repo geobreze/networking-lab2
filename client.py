@@ -2,7 +2,7 @@ import socket
 
 import client_storage
 from common import crypt
-from common.socket_util import Socket, PLAIN_TEXT, AES_ENCODED, decode_utf8, NO_INPUT, FORBIDDEN, SUCCESS
+from common.socket_util import Socket, PLAIN_TEXT, AES_ENCODED, decode_utf8, NO_INPUT, SUCCESS
 
 
 class Client:
@@ -29,6 +29,10 @@ class Client:
 
         while True:
             response = self.sock.recv()
+            if response.response_code != SUCCESS:
+                print(decode_utf8(response.body))
+                print("Response code: {}".format(response.response_code))
+                continue
             if response.encoded_flag == PLAIN_TEXT:
                 if response.body[0] == 33:
                     perform_by_name(response.body, self)
@@ -47,6 +51,9 @@ class Client:
         print(decode_utf8(self.sock.recv().body))
         username = input()
         self.sock.send_string(username)
+        print(decode_utf8(self.sock.recv().body))
+        password = input()
+        self.sock.send_string(password)
         response = self.sock.recv()
         if response.response_code != SUCCESS:
             print("Failed to authenticate. Response code: {}".format(response.response_code))

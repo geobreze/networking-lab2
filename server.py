@@ -38,7 +38,9 @@ class Session:
         self.sock.send_string("Enter login:")
         self.username = decode_utf8(self.sock.recv().body)
         print("{} trying to authenticate".format(self.username))
-        if not storage.authenticate(self.username):
+        self.sock.send_string("Enter password:")
+        password = self.sock.recv().body
+        if not storage.authenticate(self.username, password):
             print("Invalid login {} supplied. Closing the socket.".format(self.username))
             self.sock.send(b'', input_wanted=NO_INPUT, response_code=FORBIDDEN)
             self.sock.close()
@@ -56,6 +58,10 @@ class Session:
                 print("Invalid name was supplied.")
                 self.sock.send_string("Invalid name was supplied. Try again.", input_wanted=NO_INPUT,
                                       response_code=BAD_REQUEST)
+            except PermissionError:
+                print("Permission denied for user {}.".format(self.username))
+                self.sock.send_string("Permission denied.", input_wanted=NO_INPUT,
+                                      response_code=FORBIDDEN)
 
 
 if __name__ == '__main__':

@@ -16,6 +16,7 @@ SUCCESS = int.to_bytes(0x00, RESPONSE_CODE_LENGTH, byteorder='big', signed=False
 FORBIDDEN = int.to_bytes(0x01, RESPONSE_CODE_LENGTH, byteorder='big', signed=False)
 UNKNOWN_ERROR = int.to_bytes(0x02, RESPONSE_CODE_LENGTH, byteorder='big', signed=False)
 BAD_REQUEST = int.to_bytes(0x03, RESPONSE_CODE_LENGTH, byteorder='big', signed=False)
+NOT_FOUND = int.to_bytes(0x04, RESPONSE_CODE_LENGTH, byteorder='big', signed=False)
 
 
 class Response:
