@@ -6,7 +6,7 @@ import storage
 from common import crypt
 from common.socket_util import Socket, decode_utf8, FORBIDDEN, NO_INPUT, BAD_REQUEST, SUCCESS
 
-len_bytes = 4
+LEN_BYTES = 4
 
 
 class Server:
