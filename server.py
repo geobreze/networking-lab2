@@ -5,6 +5,7 @@ import threading
 
 import storage
 from common import crypt
+from common.crypt import decrypt_aes
 from common.socket_util import Socket, decode_utf8, FORBIDDEN, NO_INPUT, BAD_REQUEST, SUCCESS, REFRESH
 
 
@@ -55,25 +56,25 @@ class Session:
 
     def authenticate(self, is_first=False):
         if is_first:
-            self.sock.send_string("Enter login:")
-            self.username = decode_utf8(self.sock.recv().body)
-        print("{} trying to authenticate".format(self.username))
-        self.sock.send_string("Enter password:")
-        password = self.sock.recv().body
-        if not storage.authenticate(self.username, password):
-            print("Invalid login {} supplied. Closing the socket.".format(self.username))
-            self.sock.send(b'', input_wanted=NO_INPUT, response_code=FORBIDDEN)
-            self.sock.close()
-            return
-        self.sock.send(b'', input_wanted=NO_INPUT, response_code=SUCCESS)
-
-        if is_first:
             self.rsa_pub = self.sock.recv().body
 
         self.key = os.urandom(16)
         encoded_key = crypt.encrypt_rsa(self.rsa_pub, self.key)
         self.sock.send(encoded_key)
         self.last_token_update = datetime.datetime.now()
+
+        if is_first:
+            self.sock.send_string("Enter login:")
+            self.username = decode_utf8(self.sock.recv().body)
+        print("{} trying to authenticate".format(self.username))
+        self.sock.send_string("Enter password:")
+        password = decrypt_aes(self.key, self.sock.recv().body)
+        if not storage.authenticate(self.username, password):
+            print("Invalid login {} supplied. Closing the socket.".format(self.username))
+            self.sock.send(b'', input_wanted=NO_INPUT, response_code=FORBIDDEN)
+            self.sock.close()
+            return
+        self.sock.send(b'', input_wanted=NO_INPUT, response_code=SUCCESS)
 
     def refresh_token(self):
         if datetime.datetime.now() < self.token_timeout + self.last_token_update:

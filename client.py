@@ -1,8 +1,10 @@
 import socket
+from getpass import getpass
 
 import client_storage
 from common import crypt
-from common.socket_util import Socket, PLAIN_TEXT, AES_ENCODED, decode_utf8, NO_INPUT, SUCCESS, REFRESH
+from common.crypt import encrypt_aes
+from common.socket_util import Socket, PLAIN_TEXT, AES_ENCODED, decode_utf8, NO_INPUT, SUCCESS, REFRESH, encode_utf8
 
 
 class Client:
@@ -51,23 +53,23 @@ class Client:
             self.sock.send_string(input())
 
     def auth(self, is_first=False):
-        if is_first:
-            print(decode_utf8(self.sock.recv().body))
-            username = input()
-            self.sock.send_string(username)
-        print(decode_utf8(self.sock.recv().body))
-        password = input()
-        self.sock.send_string(password)
-        response = self.sock.recv()
-        if response.response_code != SUCCESS:
-            print("Failed to authenticate. Response code: {}".format(response.response_code))
-            self.sock.close()
-            return False
         pub, private = client_storage.get_rsa_pair()
         if is_first:
             self.sock.send(pub)
         aes_key_coded = self.sock.recv().body
         self.aes_key = crypt.decrypt_rsa(private, aes_key_coded)
+        if is_first:
+            print(decode_utf8(self.sock.recv().body))
+            username = input()
+            self.sock.send_string(username)
+        print(decode_utf8(self.sock.recv().body))
+        password = getpass()
+        self.sock.send(encrypt_aes(self.aes_key, encode_utf8(password)))
+        response = self.sock.recv()
+        if response.response_code != SUCCESS:
+            print("Failed to authenticate. Response code: {}".format(response.response_code))
+            self.sock.close()
+            return False
         return True
 
 
