@@ -22,7 +22,7 @@ Allowed commands for client are:
 
 - get --- to read file
 - edit --- to edit file
-- remove --- to remove file
+- delete --- to remove file
 - new --- to create new file
 
 To authenticate with test user use next credentials:
