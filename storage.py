@@ -6,6 +6,8 @@ PASSWD_PATH = '.passwd'
 
 
 def assert_system_file(file: str):
+    if file.find("..") != -1:
+        raise PermissionError
     if file[0] == '.':
         raise PermissionError
 
