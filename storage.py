@@ -1,5 +1,6 @@
 import hashlib
 import os
+import re
 
 STORAGE_PATH = 'storage'
 PASSWD_PATH = '.passwd'
@@ -8,7 +9,7 @@ PASSWD_PATH = '.passwd'
 def assert_system_file(file: str):
     if file.find("..") != -1:
         raise PermissionError
-    if file[0] == '.':
+    if re.match(r'/*\.', file) is not None:
         raise PermissionError
 
 

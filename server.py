@@ -45,8 +45,8 @@ class Session:
             cmd = decode_utf8(self.sock.recv().body)
             try:
                 perform_by_name(cmd, self)
-            except NameError:
-                print("Invalid name was supplied.")
+            except NameError as e:
+                print(e)
                 self.sock.send_string("Invalid name was supplied. Try again.", input_wanted=NO_INPUT,
                                       response_code=BAD_REQUEST)
             except PermissionError:

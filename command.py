@@ -16,7 +16,7 @@ def perform_by_name(name: str, session: Session):
     elif name == 'delete':
         perform_delete(session)
     else:
-        raise NameError("Invalid name supplied")
+        raise NameError("Invalid name {} supplied".format(name))
 
 
 def perform_get(session: Session):
