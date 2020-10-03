@@ -1,6 +1,7 @@
 import hashlib
 import os
 import re
+from common import crypt
 
 STORAGE_PATH = 'storage'
 PASSWD_PATH = '.passwd'
@@ -13,20 +14,20 @@ def assert_system_file(file: str):
         raise PermissionError
 
 
-def get_for_user(user: str, file: str) -> bytes:
+def get_for_user(user: str, file: str, key: bytes) -> bytes:
     assert_system_file(file)
 
     f = open(STORAGE_PATH + '/' + user + '/' + file, 'rb')
     data = f.read()
     f.close()
-    return data
+    return crypt.decrypt_aes(key, data)
 
 
-def create_for_user(user: str, file: str, data: bytes):
+def create_for_user(user: str, file: str, data: bytes, key: bytes):
     assert_system_file(file)
 
     f = open(STORAGE_PATH + '/' + user + '/' + file, 'wb')
-    f.write(data)
+    f.write(crypt.encrypt_aes(key, data))
     f.close()
 
 

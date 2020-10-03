@@ -1,7 +1,9 @@
 import datetime
 import os
 import socket
+import sys
 import threading
+from select import select
 
 import storage
 from common import crypt
@@ -10,23 +12,26 @@ from common.socket_util import Socket, decode_utf8, FORBIDDEN, NO_INPUT, BAD_REQ
 
 
 class Server:
-    def __init__(self, host, port, backlog=10):
+    def __init__(self, host, port, aes_key, backlog=10):
         self.sessions = []
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.bind((host, port))
         self.sock.listen(backlog)
+        self.aes_key = aes_key
 
     def accept(self):
         while True:
-            (client_socket, remote_addr) = self.sock.accept()
-            session = Session(Socket(client_socket), remote_addr)
-            self.sessions.append(session)
-            t = threading.Thread(target=session.handle_request)
-            t.start()
+            ready, _, _ = select([self.sock], [], [], 1)
+            if ready:
+                (client_socket, remote_addr) = self.sock.accept()
+                session = Session(Socket(client_socket), remote_addr, self.aes_key)
+                self.sessions.append(session)
+                t = threading.Thread(target=session.handle_request, daemon=True)
+                t.start()
 
 
 class Session:
-    def __init__(self, client_socket: Socket, remote_addr, token_timeout=datetime.timedelta(minutes=1)):
+    def __init__(self, client_socket: Socket, remote_addr, server_aes_key, token_timeout=datetime.timedelta(minutes=1)):
         self.sock = client_socket
         self.addr = remote_addr
         self.username = None
@@ -34,6 +39,7 @@ class Session:
         self.last_token_update = datetime.datetime.now()
         self.token_timeout = token_timeout
         self.rsa_pub = None
+        self.server_aes_key = server_aes_key
 
     def handle_request(self):
         from command import perform_by_name
@@ -84,4 +90,6 @@ class Session:
 
 
 if __name__ == '__main__':
-    Server('0.0.0.0', 8081).accept()
+    # initialization vector + AES key
+    s_aes_key = sys.stdin.buffer.read(32)
+    Server('0.0.0.0', 8081, s_aes_key).accept()
