@@ -1,11 +1,12 @@
 from client import Client
 from client_storage import edit_file
+from common.common import COMMAND_SEPARATOR_BYTES
 from common.crypt import encrypt_aes, decrypt_aes
 from common.socket_util import AES_ENCODED, NO_INPUT, decode_utf8
 
 
 def perform_by_name(command: bytes, client: Client):
-    sp = command.split(b'-||-')
+    sp = command.split(COMMAND_SEPARATOR_BYTES)
     name = sp[0]
     args = sp[1:]
     if name == b'!editor':

@@ -1,9 +1,8 @@
 import storage
+from common.common import COMMAND_SEPARATOR
 from common.crypt import encrypt_aes, decrypt_aes
 from common.socket_util import decode_utf8, AES_ENCODED, NO_INPUT, NOT_FOUND
 from server import Session
-
-COMMAND_SEPARATOR = "-||-"
 
 
 def perform_by_name(name: str, session: Session):
