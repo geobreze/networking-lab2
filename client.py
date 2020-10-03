@@ -70,6 +70,7 @@ class Client:
             print("Failed to authenticate. Response code: {}".format(response.response_code))
             self.sock.close()
             return False
+        print("Successfully authenticated!")
         return True
 
 
