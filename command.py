@@ -45,7 +45,7 @@ def perform_edit(session: Session):
     file = decode_utf8(session.sock.recv().body)
     try:
         contents = storage.get_for_user(session.username, file)
-        session.sock.send("!editor {} ".format(session.username).encode('utf-8') + encrypt_aes(session.key, contents))
+        session.sock.send("!editor-||-{}-||-".format(session.username).encode('utf-8') + encrypt_aes(session.key, contents))
         raw = session.sock.recv().body
         data = decrypt_aes(session.key, raw)
         storage.create_for_user(session.username, file, data)

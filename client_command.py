@@ -5,7 +5,7 @@ from common.socket_util import AES_ENCODED, NO_INPUT, decode_utf8
 
 
 def perform_by_name(command: bytes, client: Client):
-    sp = command.split(b' ')
+    sp = command.split(b'-||-')
     name = sp[0]
     args = sp[1:]
     if name == b'!editor':
