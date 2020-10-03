@@ -1,15 +1,17 @@
 # Overview
 
-This application consists from two parts. Server and client part.
+This application consists from three parts. Server, man in the middle and client part.
 
-By default server runs on 8080 port.
+By default server runs on 8081, man in the middle server runs on 8081 port.
+
+Server reads AES key and initialization vector for file storage from `stdin`. 
 
 # Usage
 
-To run application firstly run server by running
+To run application firstly run server by running.
 
 ```
-python server.py
+cat key.aes | python server.py
 ```
 
 Then, you need to run man in the middle application using
@@ -37,6 +39,10 @@ To authenticate with test user use next credentials:
 username: user
 password: password
 ```
+## Generating new key
+
+To generate new key for server-side storage, run `generate_aes.sh` script. This script will generate 32 random bytes
+for AES encryption and save them to file `key.aes`.
 
 # Man in the middle
 
