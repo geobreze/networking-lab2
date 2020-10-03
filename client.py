@@ -64,7 +64,7 @@ class Client:
             self.sock.send_string(username)
         print(decode_utf8(self.sock.recv().body))
         password = getpass()
-        self.sock.send(encrypt_aes(self.aes_key, encode_utf8(password)))
+        self.sock.send(encrypt_aes(self.aes_key, encode_utf8(password)), flag=AES_ENCODED)
         response = self.sock.recv()
         if response.response_code != SUCCESS:
             print("Failed to authenticate. Response code: {}".format(response.response_code))
