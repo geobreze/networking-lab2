@@ -1,5 +1,6 @@
 import socket
 import threading
+from select import select
 
 from common import crypt
 from common.socket_util import Socket, REFRESH, AES_ENCODED, INPUT_WANTED
@@ -17,11 +18,13 @@ class MIMServer:
 
     def accept(self):
         while True:
-            (client_socket, remote_addr) = self.sock.accept()
-            session = MIMSession(Socket(client_socket), self.s_sock)
-            self.sessions.append(session)
-            t = threading.Thread(target=session.handle_request)
-            t.start()
+            ready, _, _ = select([self.sock], [], [], 1)
+            if ready:
+                (client_socket, remote_addr) = self.sock.accept()
+                session = MIMSession(Socket(client_socket), self.s_sock)
+                self.sessions.append(session)
+                t = threading.Thread(target=session.handle_request)
+                t.start()
 
 
 class MIMSession:
