@@ -1,1 +1,1 @@
-echo $(dd if=/dev/urandom bs=32 count=1) > key.aes
+printf $(dd if=/dev/urandom bs=16 count=1) > key.aes

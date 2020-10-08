@@ -41,7 +41,7 @@ password: password
 ```
 ## Generating new key
 
-To generate new key for server-side storage, run `generate_aes.sh` script. This script will generate 32 random bytes
+To generate new key for server-side storage, run `generate_aes.sh` script. This script will generate 16 random bytes
 for AES encryption and save them to file `key.aes`.
 
 # Man in the middle
